@@ -141,7 +141,6 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
       this.countdownNow.set(Date.now());
     }, 1000);
     this.setScrollLocked(true);
-    this.setScrollLocked(true);
   }
 
   ngAfterViewInit(): void {
@@ -197,6 +196,10 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     this.autoScrollHandler = () => this.markAutoScrollPause();
     window.addEventListener('wheel', this.autoScrollHandler, { passive: true });
     window.addEventListener('keydown', this.autoScrollHandler);
+    window.addEventListener('touchstart', this.autoScrollHandler, { passive: true });
+    window.addEventListener('touchmove', this.autoScrollHandler, { passive: true });
+    window.addEventListener('touchend', this.autoScrollHandler, { passive: true });
+    window.addEventListener('touchcancel', this.autoScrollHandler, { passive: true });
   }
 
   ngOnDestroy(): void {
@@ -216,6 +219,10 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     if (typeof window !== 'undefined' && this.autoScrollHandler) {
       window.removeEventListener('wheel', this.autoScrollHandler);
       window.removeEventListener('keydown', this.autoScrollHandler);
+      window.removeEventListener('touchstart', this.autoScrollHandler);
+      window.removeEventListener('touchmove', this.autoScrollHandler);
+      window.removeEventListener('touchend', this.autoScrollHandler);
+      window.removeEventListener('touchcancel', this.autoScrollHandler);
       this.autoScrollHandler = undefined;
     }
     if (this.mediaQuery && this.mediaQueryHandler) {
@@ -237,15 +244,14 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     this.stopAutoScroll();
 
     if (typeof window !== 'undefined') {
+      this.setScrollLocked(false);
       const sparkleDelay = this.prefersReducedMotion() ? 0 : 650;
       const autoScrollDelay = this.prefersReducedMotion() ? 0 : 8000;
 
       this.envelopeRevealTimer = window.setTimeout(() => {
         this.envelopeOpening.set(false);
       }, sparkleDelay);
-
       window.requestAnimationFrame(() => {
-        this.setScrollLocked(false);
         this.autoScrollSuppressPauseUntil = Date.now() + 450;
         this.jumpToOpenSection('intro');
         this.scheduleAutoScrollStart(autoScrollDelay);
@@ -568,8 +574,13 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const overflowValue = locked ? 'hidden' : '';
-    this.document.documentElement.style.overflow = overflowValue;
-    this.document.body.style.overflow = overflowValue;
+    if (locked) {
+      this.document.documentElement.style.overflow = 'hidden';
+      this.document.body.style.overflow = 'hidden';
+      return;
+    }
+
+    this.document.documentElement.style.removeProperty('overflow');
+    this.document.body.style.removeProperty('overflow');
   }
 }

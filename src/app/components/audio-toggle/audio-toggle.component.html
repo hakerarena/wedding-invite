@@ -1,0 +1,11 @@
+@if (audio.enabled() && (audio.status() === 'paused' || audio.status() === 'playing')) {
+  <button
+    type="button"
+    class="speaker-toggle"
+    (click)="audio.togglePlayback()"
+    [attr.aria-pressed]="audio.status() === 'playing'"
+    [attr.aria-label]="audio.status() === 'playing' ? 'Speaker On' : 'Speaker Off'"
+  >
+    {{ audio.status() === 'playing' ? '🔊' : '🔇' }}
+  </button>
+}

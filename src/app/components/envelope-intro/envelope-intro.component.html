@@ -1,0 +1,31 @@
+<section class="prologue-shell">
+  <div class="section-shell prologue-layout">
+    <div class="envelope-stage ornate-surface">
+      <p class="eyebrow prologue-title">
+        <span>The Sarkar Family</span>
+        <em>Invites You</em>
+      </p>
+      <div
+        class="envelope"
+        [class.envelope--opened]="opened"
+        [class.envelope--reduced]="reducedMotion"
+      >
+        <button
+          type="button"
+          class="envelope-button"
+          [disabled]="opened || opening"
+          (click)="openRequested.emit()"
+        >
+          <span class="envelope-flap"></span>
+          <span class="envelope-pocket"></span>
+          @if (opening) {
+            <span class="envelope-sparkles" aria-hidden="true"></span>
+          }
+          @if (!opened) {
+            <span class="envelope-button__cta">Open Me</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

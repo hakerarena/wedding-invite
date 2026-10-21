@@ -1,0 +1,97 @@
+<section
+  [id]="event.id"
+  class="event-section section-shell scene-anchor"
+  [class.event-section--active]="active"
+  [class.event-section--nandimukh]="event.id === 'nandimukh'"
+  [class.event-section--after-countdown]="event.id === 'nandimukh'"
+  [class]="'theme-' + event.themeId"
+  [attr.data-section-id]="event.id"
+  [attr.aria-labelledby]="event.id + '-title'"
+>
+  <article class="ornate-surface event-surface">
+    <div class="event-visual">
+      @if (asset; as sectionAsset) {
+        <img
+          [src]="sectionAsset.path"
+          [alt]="sectionAsset.alt"
+          [style.object-position]="sectionAsset.focalPoint ?? 'center center'"
+          loading="lazy"
+        />
+      }
+    </div>
+
+    <div class="event-content">
+      <h2 [id]="event.id + '-title'">{{ event.title }}</h2>
+      <p class="event-subtitle">{{ event.subtitle }}</p>
+
+      <dl class="event-details">
+        <div>
+          <dt>Date</dt>
+          <dd>{{ event.dateLabel }}</dd>
+        </div>
+        <div>
+          <dt>Time</dt>
+          <dd>{{ event.localStartTime }}</dd>
+        </div>
+        <div class="event-details__venue-item">
+          <a
+            class="event-details__venue-card"
+            [href]="event.mapUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.aria-label]="'Open map for ' + event.venueDisplayName"
+          >
+            <span class="event-details__venue-label">Venue</span>
+            <span class="event-details__venue-content">
+              <img
+                class="event-details__venue-icon"
+                src="assets/maps.jpg"
+                alt=""
+                aria-hidden="true"
+              />
+              <span class="event-details__venue-text">{{ event.venueDisplayName }}</span>
+            </span>
+          </a>
+        </div>
+      </dl>
+
+      @if (event.scheduleHighlights?.length) {
+        <div class="event-schedule" aria-label="Wedding day schedule highlights">
+          @for (highlight of event.scheduleHighlights; track highlight.label) {
+            <div
+              class="event-schedule__item"
+              [class.event-schedule__item--baraat]="highlight.label === 'Baraat'"
+              [class.event-schedule__item--jaimaal]="highlight.label === 'Jaimaal & Reception'"
+            >
+              <span class="event-schedule__label">{{ highlight.label }}</span>
+              <strong class="event-schedule__time">{{ highlight.time }}</strong>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="button-row button-row--secondary">
+        @if (event.previousEventId) {
+          <button
+            type="button"
+            class="button-ghost"
+            [attr.aria-label]="'Go to ' + previousLabel"
+            (click)="previousRequested.emit()"
+          >
+            Previous Event
+          </button>
+        }
+        @if (event.id !== 'wedding-day') {
+          <button
+            type="button"
+            class="button-ghost"
+            [attr.aria-label]="'Go to ' + nextLabel"
+            (click)="nextRequested.emit()"
+          >
+            Next Event
+          </button>
+        }
+      </div>
+    </div>
+  </article>
+</section>

@@ -1,0 +1,133 @@
+:host {
+  display: block;
+}
+
+.countdown-stage {
+  position: relative;
+  padding-bottom: 0.2rem;
+}
+
+.countdown-strip {
+  position: sticky;
+  top: 0.55rem;
+  z-index: 18;
+  display: grid;
+  gap: 0.7rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0.75rem 0.9rem;
+  border-radius: 26px;
+  background:
+    linear-gradient(135deg, rgba(255, 250, 244, 0.62), rgba(255, 241, 227, 0.46)),
+    rgba(255, 248, 238, 0.38);
+  border: 1px solid rgba(197, 154, 69, 0.18);
+  box-shadow:
+    0 18px 34px rgba(86, 34, 16, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(20px);
+}
+
+.countdown-stage--pinned {
+  position: relative;
+  z-index: 18;
+}
+
+.countdown-stage--pinned .countdown-strip {
+  position: fixed;
+  top: 0.55rem;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: min(1120px, calc(100vw - 2rem));
+}
+
+.countdown-strip__heading {
+  display: grid;
+  gap: 0.08rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.countdown-strip__title {
+  margin: 0;
+  font-size: clamp(1.18rem, 2.8vw, 1.9rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-crimson);
+}
+
+.countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.countdown-box {
+  display: grid;
+  gap: 0.2rem;
+  place-items: center;
+  padding: 0.52rem 0.45rem;
+  border-radius: 18px;
+  background: rgba(255, 247, 237, 0.62);
+  border: 1px solid rgba(197, 154, 69, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 8px 18px rgba(86, 34, 16, 0.06);
+}
+
+.countdown-box__value {
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  font-size: clamp(1.45rem, 4vw, 2.15rem);
+  line-height: 1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-crimson);
+}
+
+.countdown-box__label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(127, 52, 32, 0.72);
+}
+
+@media (max-width: 679px) {
+  .countdown-strip {
+    gap: 0.5rem;
+    padding: 0.65rem 0.65rem;
+  }
+
+  .countdown-stage--pinned .countdown-strip {
+    width: calc(100vw - 1.5rem);
+  }
+
+  .countdown-strip__title {
+    font-size: clamp(1rem, 4vw, 1.25rem);
+  }
+
+  .countdown-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.25rem;
+  }
+
+  .countdown-box {
+    padding: 0.34rem 0.18rem;
+    border-radius: 14px;
+  }
+
+  .countdown-box__value {
+    font-size: clamp(0.95rem, 4.8vw, 1.2rem);
+  }
+
+  .countdown-box__label {
+    font-size: 0.48rem;
+    letter-spacing: 0.08em;
+  }
+}
+
+@media (min-width: 1200px) {
+  .countdown-stage--pinned .countdown-strip {
+    width: min(1240px, calc(100vw - 4rem));
+  }
+}

@@ -1,0 +1,31 @@
+<section
+  id="countdown"
+  class="section-shell scene-anchor story-scene story-scene--countdown countdown-stage"
+  [class.countdown-stage--pinned]="pinned"
+  data-section-id="countdown"
+  aria-labelledby="countdown-heading"
+>
+  <div class="countdown-strip countdown-strip--modern" aria-label="Countdown to wedding day">
+    <div class="countdown-strip__heading">
+      <h2 id="countdown-heading" class="countdown-strip__title">The Celebration Draws Near</h2>
+    </div>
+    <div class="countdown-grid" aria-label="Time remaining">
+      <div class="countdown-box">
+        <strong class="countdown-box__value">{{ countdown.days }}</strong>
+        <span class="countdown-box__label">Days</span>
+      </div>
+      <div class="countdown-box">
+        <strong class="countdown-box__value">{{ countdown.hours }}</strong>
+        <span class="countdown-box__label">Hours</span>
+      </div>
+      <div class="countdown-box">
+        <strong class="countdown-box__value">{{ countdown.minutes }}</strong>
+        <span class="countdown-box__label">Minutes</span>
+      </div>
+      <div class="countdown-box">
+        <strong class="countdown-box__value">{{ countdown.seconds }}</strong>
+        <span class="countdown-box__label">Seconds</span>
+      </div>
+    </div>
+  </div>
+</section>

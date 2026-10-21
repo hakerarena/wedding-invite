@@ -1,0 +1,35 @@
+<section class="section-shell outro-shell" aria-labelledby="outro-heading">
+  <div class="ornate-surface outro-card">
+    <div class="outro-copy">
+      <h2 id="outro-heading">Sachin &amp; Surabhi</h2>
+      <p class="outro-script">
+        As we embark on this beautiful new chapter, your presence and blessings would mean the world
+        to our family, making this occasion even more special and memorable.
+      </p>
+      <p class="outro-support">“Your presence will make our celebration complete.”</p>
+      @if (showReturnTop) {
+        <div class="button-row outro-actions">
+          <button
+            type="button"
+            class="button-pill outro-actions__up"
+            aria-label="Return to beginning"
+            (click)="restartRequested.emit()"
+          >
+            <span class="outro-actions__up-icon" aria-hidden="true">↑</span>
+          </button>
+        </div>
+      }
+    </div>
+
+    @if (asset; as closingAsset) {
+      <figure class="outro-image">
+        <img
+          [src]="closingAsset.path"
+          [alt]="closingAsset.alt"
+          [style.object-position]="closingAsset.focalPoint ?? 'center center'"
+          loading="lazy"
+        />
+      </figure>
+    }
+  </div>
+</section>

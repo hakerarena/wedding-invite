@@ -1,0 +1,6 @@
+{
+  "features": {
+    "showCountdownTimer": true,
+    "enableAudio": true
+  }
+}

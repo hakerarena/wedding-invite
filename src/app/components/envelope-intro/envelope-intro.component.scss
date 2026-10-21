@@ -1,0 +1,226 @@
+.prologue-shell {
+  padding: 1rem 0 1.2rem;
+}
+
+.prologue-layout {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.envelope-stage {
+  padding: 1.25rem;
+  min-height: min(88vh, 760px);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background:
+    radial-gradient(circle at top, rgba(255, 214, 147, 0.28), transparent 36%),
+    linear-gradient(180deg, #7f131f 0%, #c62828 36%, #8f1726 100%);
+  color: #fff8ef;
+}
+
+.prologue-title {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 1.2rem;
+}
+
+.prologue-title span {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.1rem, 3vw, 1.8rem);
+  letter-spacing: 0.26em;
+  color: rgba(255, 246, 231, 0.9);
+}
+
+.prologue-title em {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(2.1rem, 7vw, 4.2rem);
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #ffe7b5;
+  text-shadow: 0 8px 22px rgba(48, 6, 12, 0.24);
+}
+
+.envelope {
+  perspective: 1400px;
+}
+
+.envelope-button {
+  position: relative;
+  width: min(86vw, 420px);
+  aspect-ratio: 1.18;
+  border: 0;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #f0d5a5 0%, #fff1d7 50%, #efc47f 100%);
+  box-shadow: 0 28px 44px rgba(39, 7, 7, 0.34);
+  overflow: hidden;
+}
+
+.envelope-button__cta {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: 3;
+  min-width: 9rem;
+  transform: translate(-50%, -50%);
+  padding: 0.95rem 1.5rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #fff8ef, #efd0a0);
+  color: var(--color-crimson);
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(0.95rem, 2.4vw, 1.15rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  box-shadow: 0 12px 24px rgba(39, 7, 7, 0.18);
+}
+
+.envelope-button::before {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  border: 1px solid rgba(166, 27, 27, 0.42);
+  border-radius: 18px;
+}
+
+.envelope-flap,
+.envelope-pocket,
+.invitation-card {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.envelope-flap {
+  top: 0;
+  width: 100%;
+  height: 62%;
+  background: linear-gradient(160deg, rgba(166, 27, 27, 0.9), rgba(113, 16, 22, 0.98));
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top center;
+  transition: transform var(--transition-slow);
+}
+
+.envelope-pocket {
+  bottom: 0;
+  width: 100%;
+  height: 68%;
+  background:
+    linear-gradient(135deg, rgba(166, 27, 27, 0.95), rgba(123, 18, 23, 0.98)),
+    radial-gradient(circle at center, rgba(255, 235, 192, 0.18), transparent 40%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 0, 50% 62%);
+}
+
+.invitation-card {
+  top: 20%;
+  width: calc(100% - 4rem);
+  min-height: 58%;
+  display: grid;
+  align-content: center;
+  gap: 0.4rem;
+  padding: 1.2rem;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.98), rgba(255, 239, 211, 0.98)),
+    radial-gradient(circle at center, rgba(197, 154, 69, 0.14), transparent 60%);
+  color: var(--color-crimson);
+  box-shadow: inset 0 0 0 1px rgba(197, 154, 69, 0.35);
+  transition: transform var(--transition-slow);
+}
+
+.invitation-card strong {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(2rem, 7vw, 3.4rem);
+}
+
+.invitation-card small {
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.envelope--opened .envelope-flap {
+  transform: translateX(-50%) rotateX(180deg);
+}
+
+.envelope--opened .invitation-card {
+  transform: translate(-50%, -18%);
+}
+
+.envelope--opened .envelope-button__cta {
+  opacity: 0;
+  transform: translate(-50%, -55%) scale(0.92);
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.envelope--reduced .envelope-flap,
+.envelope--reduced .invitation-card,
+.envelope--reduced .envelope-button__cta {
+  transition-duration: 0.01ms;
+}
+
+@media (min-width: 900px) {
+  .prologue-layout {
+    justify-items: center;
+  }
+
+  .envelope-stage {
+    width: min(100%, 1240px);
+    min-height: 78vh;
+    padding: 2.5rem 3rem 3rem;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+    justify-items: center;
+    align-items: center;
+    row-gap: 2.2rem;
+    text-align: center;
+  }
+
+  .prologue-title {
+    align-self: center;
+    justify-self: center;
+    margin-bottom: 0;
+    text-align: center;
+    max-width: none;
+    padding-right: 0;
+  }
+
+  .envelope {
+    justify-self: center;
+    align-self: center;
+    width: min(100%, 720px);
+  }
+
+  .envelope-button {
+    width: 100%;
+    max-width: 720px;
+    aspect-ratio: 1.3;
+    border-radius: 30px;
+    background: linear-gradient(145deg, #f9e2b8 0%, #fff8ea 55%, #eabf73 100%);
+    box-shadow: 0 34px 70px rgba(39, 7, 7, 0.36);
+  }
+
+  .envelope-stage::after {
+    content: '';
+    position: absolute;
+    inset: auto 10% 1.4rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 244, 224, 0.38), transparent);
+  }
+}
+
+@media (min-width: 1300px) {
+  .envelope-stage {
+    padding-inline: 4rem;
+    column-gap: 4rem;
+  }
+
+  .prologue-title span {
+    font-size: clamp(1.2rem, 1.8vw, 2rem);
+  }
+
+  .prologue-title em {
+    font-size: clamp(2.4rem, 4vw, 5rem);
+  }
+}

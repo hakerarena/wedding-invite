@@ -56,6 +56,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   private autoScrollSuppressPauseUntil = 0;
   private autoScrollCarry = 0;
   private autoScrollEnabled = false;
+  private autoScrollPreviousBehavior?: string;
   private envelopeRevealTimer?: number;
   private autoScrollStartTimer?: number;
   private mediaQuery?: MediaQueryList;
@@ -511,6 +512,8 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     this.autoScrollEnabled = true;
     this.autoScrollCarry = 0;
     this.autoScrollPausedUntil = initialDelayMs > 0 ? Date.now() + initialDelayMs : 0;
+    this.autoScrollPreviousBehavior = this.document.documentElement.style.scrollBehavior;
+    this.document.documentElement.style.scrollBehavior = 'auto';
 
     const step = () => {
       if (typeof window === 'undefined' || !this.autoScrollEnabled) {
@@ -559,6 +562,11 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
 
     this.autoScrollEnabled = false;
     this.autoScrollCarry = 0;
+
+    if (this.autoScrollPreviousBehavior !== undefined) {
+      this.document.documentElement.style.scrollBehavior = this.autoScrollPreviousBehavior;
+      this.autoScrollPreviousBehavior = undefined;
+    }
   }
 
   private markAutoScrollPause(): void {

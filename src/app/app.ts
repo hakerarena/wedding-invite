@@ -56,6 +56,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   protected readonly audio = inject(AudioService);
 
   private intersectionObserver?: IntersectionObserver;
+  private lastScrollY = 0;
   private scrollHandler?: () => void;
   private autoScrollHandler?: () => void;
   private autoScrollAnimationFrame?: number;
@@ -98,7 +99,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   protected readonly visibleWeddingEvents = computed(() =>
     weddingEvents.filter((event) => this.featureFlags()[this.eventFeatureFlags[event.id]]),
   );
-  protected readonly nandimukhDominant = signal(false);
+  protected readonly countdownVisible = signal(false);
   protected readonly countdownNow = signal(Date.now());
   protected readonly envelopeOpening = signal(false);
   protected readonly invitationOpened = signal(false);
@@ -175,6 +176,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     }
 
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    this.lastScrollY = window.scrollY;
     this.navigation.setCurrentSection('prologue');
 
     if (typeof IntersectionObserver !== 'undefined') {
@@ -206,7 +208,10 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.scrollHandler = () => {
-      this.syncCurrentSectionFromViewport();
+      const currentScrollY = window.scrollY;
+      const isScrollingUp = currentScrollY < this.lastScrollY;
+      this.lastScrollY = currentScrollY;
+      this.syncCurrentSectionFromViewport(isScrollingUp);
 
       if (!this.autoScrollEnabled && Date.now() > this.autoScrollSuppressPauseUntil) {
         this.markAutoScrollPause();
@@ -398,12 +403,12 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     return currentIndex < 0 ? undefined : sections[currentIndex + direction];
   }
 
-  private syncCurrentSectionFromViewport(): void {
+  private syncCurrentSectionFromViewport(isScrollingUp = false): void {
     if (typeof window === 'undefined') {
       return;
     }
 
-    this.updateNandimukhDominance();
+    this.updateNandimukhDominance(isScrollingUp);
 
     const sections = Array.from(this.document.querySelectorAll<HTMLElement>('[data-section-id]'));
     if (!sections.length) {
@@ -431,12 +436,12 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private updateNandimukhDominance(): void {
+  private updateNandimukhDominance(isScrollingUp: boolean): void {
     const viewportHeight = window.innerHeight;
     const nandimukh = this.document.getElementById('nandimukh');
 
     if (!this.showCountdownTimer() || !nandimukh || viewportHeight <= 0) {
-      this.nandimukhDominant.set(false);
+      this.countdownVisible.set(false);
       return;
     }
 
@@ -445,7 +450,14 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
       0,
       Math.min(bounds.bottom, viewportHeight) - Math.max(bounds.top, 0),
     );
-    this.nandimukhDominant.set(visibleHeight / viewportHeight > 0.5);
+    if (isScrollingUp && bounds.top >= 0) {
+      this.countdownVisible.set(false);
+      return;
+    }
+
+    if (visibleHeight / viewportHeight > 0.5) {
+      this.countdownVisible.set(true);
+    }
   }
 
   private clearIntroTimers(): void {

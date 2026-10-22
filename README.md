@@ -71,15 +71,36 @@ Run unit tests:
 npm test -- --watch=false
 ```
 
+## Feature flags
+
+Each invitation scene and the audio control has a feature flag. Local defaults are in
+`assets/environment.json`. For Vercel deployments, set any of these build environment variables
+in Project Settings → Environment Variables, then redeploy:
+
+| Vercel variable | Controls |
+| --- | --- |
+| `FEATURE_SHOW_PROLOGUE` | Opening envelope scene |
+| `FEATURE_SHOW_FAMILY_INVITATION` | Family invitation scene |
+| `FEATURE_SHOW_COUNTDOWN_TIMER` | Countdown scene |
+| `FEATURE_SHOW_NANDIMUKH` | Nandimukh scene |
+| `FEATURE_SHOW_ENGAGEMENT_SANGEET` | Engagement and Sangeet scene |
+| `FEATURE_SHOW_FLOWER_HALDI` | Flower Haldi scene |
+| `FEATURE_SHOW_WEDDING_DAY` | Baraat, Jaimaal, and Reception scene |
+| `FEATURE_SHOW_OUTRO` | Closing scene |
+| `FEATURE_ENABLE_AUDIO` | Background audio |
+
+Values accept `true`/`false`, `1`/`0`, `on`/`off`, or `yes`/`no`. Unset variables retain the
+defaults from `assets/environment.json`. The build writes the merged values to the deployed
+`assets/environment.json`; no Vercel serverless function or client-side secret is required.
+
 ## Audio
 
 Audio playback is enabled by default and starts when the invitation loads. Browsers may block
 audible autoplay until the visitor interacts with the page; opening the envelope retries playback.
 The speaker control lets visitors pause and resume audio.
 
-Audio availability is controlled by `features.enableAudio` in `assets/environment.json`. Set it to
-`false` to disable playback and hide the speaker control, or `true` to enable audio. The supplied
-track is `assets/Music.mp3`.
+Audio availability is controlled by `features.enableAudio` in `assets/environment.json` or the
+`FEATURE_ENABLE_AUDIO` Vercel build variable. The supplied track is `assets/Music.mp3`.
 
 ## Deployment notes
 

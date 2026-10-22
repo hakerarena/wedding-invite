@@ -1,66 +1,48 @@
 <app-audio-toggle />
 
 <main class="invitation-app">
-  <app-envelope-intro
-    id="prologue"
-    data-section-id="prologue"
-    class="scene-anchor"
-    [opened]="invitationOpened()"
-    [opening]="envelopeOpening()"
-    [reducedMotion]="prefersReducedMotion()"
-    (openRequested)="openInvitation()"
-  />
+  @if (showPrologue()) {
+    <app-envelope-intro
+      id="prologue"
+      data-section-id="prologue"
+      class="scene-anchor"
+      [opened]="invitationOpened()"
+      [opening]="envelopeOpening()"
+      [reducedMotion]="prefersReducedMotion()"
+      (openRequested)="openInvitation()"
+    />
+  }
 
-  <section
-    id="intro"
-    class="section-shell scene-anchor story-scene story-scene--parents"
-    data-section-id="intro"
-    aria-label="Parents' blessing intro"
-  >
-    <article class="ornate-surface story-card story-card--parents">
-      <div class="intro-copy">
-        <div class="intro-message" aria-label="Family invitation message">
-          <p class="intro-message__line intro-message__line--opening">With the blessings of</p>
-          <p class="intro-message__line intro-message__line--name">
-            <strong>Maa Durga,</strong>
-          </p>
-          <p class="intro-message__line intro-message__line--opening">
-            and in loving memory of my beloved husband,
-          </p>
-          <p class="intro-message__line intro-message__line--name">
-            <strong>Late Shri Saumendu Sarkar</strong>
-          </p>
-          <p class="intro-message__line">
-            I, <strong class="intro-message__inline-name">Madhumita</strong>, warmly invite you to
-            share in our joy as we celebrate the wedding of our dear son.
-          </p>
+  @if (showFamilyInvitation()) {
+    <section
+      id="intro"
+      class="section-shell scene-anchor story-scene story-scene--parents"
+      data-section-id="intro"
+      aria-label="Parents' blessing intro"
+    >
+      <article class="ornate-surface story-card story-card--parents">
+        <div class="intro-copy">
+          <div class="intro-message" aria-label="Family invitation message">
+            <p class="intro-message__line intro-message__line--opening">With the blessings of</p>
+            <p class="intro-message__line intro-message__line--name">
+              <strong>Maa Durga,</strong>
+            </p>
+            <p class="intro-message__line intro-message__line--opening">
+              and in loving memory of my beloved husband,
+            </p>
+            <p class="intro-message__line intro-message__line--name">
+              <strong>Late Shri Saumendu Sarkar</strong>
+            </p>
+            <p class="intro-message__line">
+              I, <strong class="intro-message__inline-name">Madhumita</strong>, warmly invite you to
+              share in our joy as we celebrate the wedding of our dear son.
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div class="intro-ornament" aria-hidden="true">
-        <div class="intro-ornament__frame">
-          <p class="intro-ornament__label">Wedding Invitation</p>
-          <strong>Sachin &amp; Surabhi</strong>
-          <small>2 December 2026</small>
-        </div>
-      </div>
-    </article>
-  </section>
-
-  <section
-    id="wedding-highlight"
-    class="section-shell scene-anchor story-scene story-scene--highlight"
-    data-section-id="wedding-highlight"
-    aria-labelledby="highlight-heading"
-  >
-    <article class="ornate-surface story-card story-card--highlight">
-      <h2 id="highlight-heading" class="story-card__title story-card__title--highlight">
-        <span>Sachin</span>
-        <span>weds</span>
-        <span>Surabhi</span>
-      </h2>
-    </article>
-  </section>
+      </article>
+    </section>
+  }
 
   @if (showCountdownTimer()) {
     <app-countdown-timer
@@ -69,7 +51,7 @@
     ></app-countdown-timer>
   }
 
-  @for (event of weddingEvents; track trackByEventId($index, event)) {
+  @for (event of visibleWeddingEvents(); track trackByEventId($index, event)) {
     <app-event-section
       [event]="event"
       [asset]="assetManifest[event.assetKey]"
@@ -81,12 +63,14 @@
     />
   }
 
-  <app-wedding-outro
-    id="outro"
-    data-section-id="outro"
-    class="scene-anchor"
-    [asset]="assetManifest.closingCouple"
-    [showReturnTop]="currentSectionId() === 'outro'"
-    (restartRequested)="returnToBeginning()"
-  />
+  @if (showOutro()) {
+    <app-wedding-outro
+      id="outro"
+      data-section-id="outro"
+      class="scene-anchor"
+      [asset]="assetManifest.closingCouple"
+      [showReturnTop]="currentSectionId() === 'outro'"
+      (restartRequested)="returnToBeginning()"
+    />
+  }
 </main>

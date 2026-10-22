@@ -19,11 +19,20 @@ import { weddingEvents, type WeddingEvent, type WeddingEventId } from './data/we
 import { AudioService } from './services/audio.service';
 import { NavigationService, type InvitationSectionId } from './services/navigation.service';
 
+interface RuntimeFeatureFlags {
+  showPrologue: boolean;
+  showFamilyInvitation: boolean;
+  showCountdownTimer: boolean;
+  showNandimukh: boolean;
+  showEngagementSangeet: boolean;
+  showFlowerHaldi: boolean;
+  showWeddingDay: boolean;
+  showOutro: boolean;
+  enableAudio: boolean;
+}
+
 interface RuntimeEnvironment {
-  features?: {
-    showCountdownTimer?: boolean | string;
-    enableAudio?: boolean | string;
-  };
+  features?: Partial<Record<keyof RuntimeFeatureFlags, boolean | string>>;
 }
 
 @Component({
@@ -65,8 +74,33 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
 
   protected readonly assetManifest = assetManifest;
   protected readonly weddingEvents = weddingEvents;
+  private readonly eventFeatureFlags: Record<WeddingEventId, keyof RuntimeFeatureFlags> = {
+    nandimukh: 'showNandimukh',
+    'engagement-sangeet': 'showEngagementSangeet',
+    'flower-haldi': 'showFlowerHaldi',
+    'wedding-day': 'showWeddingDay',
+  };
+  private readonly featureFlags = signal<RuntimeFeatureFlags>({
+    showPrologue: true,
+    showFamilyInvitation: true,
+    showCountdownTimer: true,
+    showNandimukh: true,
+    showEngagementSangeet: true,
+    showFlowerHaldi: true,
+    showWeddingDay: true,
+    showOutro: true,
+    enableAudio: true,
+  });
+  protected readonly showPrologue = computed(() => this.featureFlags().showPrologue);
+  protected readonly showFamilyInvitation = computed(
+    () => this.featureFlags().showFamilyInvitation,
+  );
+  protected readonly showCountdownTimer = computed(() => this.featureFlags().showCountdownTimer);
+  protected readonly showOutro = computed(() => this.featureFlags().showOutro);
+  protected readonly visibleWeddingEvents = computed(() =>
+    weddingEvents.filter((event) => this.featureFlags()[this.eventFeatureFlags[event.id]]),
+  );
   protected readonly countdownNow = signal(Date.now());
-  protected readonly showCountdownTimer = signal(true);
   protected readonly envelopeOpening = signal(false);
   protected readonly invitationOpened = signal(false);
   protected readonly prefersReducedMotion = signal(false);
@@ -105,7 +139,6 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   protected readonly navigationItems = [
     { id: 'prologue', label: 'Prologue', shortLabel: 'Start' },
     { id: 'intro', label: 'Family Invitation', shortLabel: 'Intro' },
-    { id: 'wedding-highlight', label: 'Sachin weds Surabhi', shortLabel: 'Highlight' },
     { id: 'countdown', label: 'Countdown', shortLabel: 'Count' },
     { id: 'nandimukh', label: 'Nandimukh', shortLabel: 'Nandimukh' },
     { id: 'engagement-sangeet', label: 'Engagement & Sangeet', shortLabel: 'Sangeet' },
@@ -115,7 +148,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   ] as const;
   protected readonly shareUrl = computed(() => {
     if (typeof window === 'undefined') {
-      return 'https://example.com';
+      return 'https://sachin-weds-surabhi.vercel.app/';
     }
 
     return window.location.href;
@@ -254,7 +287,9 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
       }, sparkleDelay);
       window.requestAnimationFrame(() => {
         this.autoScrollSuppressPauseUntil = Date.now() + 450;
-        this.jumpToOpenSection('intro');
+        this.jumpToOpenSection(
+          this.getVisibleSectionIds().find((sectionId) => sectionId !== 'prologue') ?? 'prologue',
+        );
         this.scheduleAutoScrollStart(autoScrollDelay);
       });
     }
@@ -268,51 +303,42 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   }
 
   protected previousLabel(event: WeddingEvent): string {
-    if (event.id === 'nandimukh') {
-      return this.showCountdownTimer() ? 'Countdown' : 'Sachin weds Surabhi';
-    }
-
-    if (event.previousEventId) {
-      return this.labelForSection(event.previousEventId);
-    }
-
-    return 'Family Invitation';
+    const previousSection = this.adjacentVisibleSection(event.id, -1);
+    return previousSection ? this.labelForSection(previousSection) : '';
   }
 
   protected nextLabel(event: WeddingEvent): string {
-    if (event.id === 'wedding-day') {
-      return 'Continue to Outro';
-    }
-
-    if (event.nextEventId) {
-      return this.labelForSection(event.nextEventId);
-    }
-
-    return 'Outro';
+    const nextSection = this.adjacentVisibleSection(event.id, 1);
+    return nextSection ? this.labelForSection(nextSection) : '';
   }
 
   protected goToPrevious(event: WeddingEvent): void {
-    if (event.id === 'nandimukh') {
-      this.scrollToSection(this.showCountdownTimer() ? 'countdown' : 'wedding-highlight');
-      return;
+    const previousSection = this.adjacentVisibleSection(event.id, -1);
+    if (previousSection) {
+      this.scrollToSection(previousSection);
     }
-
-    this.scrollToSection(event.previousEventId ?? 'intro');
   }
 
   protected goToNext(event: WeddingEvent): void {
-    this.scrollToSection(event.nextEventId ?? 'outro');
+    const nextSection = this.adjacentVisibleSection(event.id, 1);
+    if (nextSection) {
+      this.scrollToSection(nextSection);
+    }
   }
 
   protected returnToBeginning(): void {
     this.clearIntroTimers();
     this.clearOpenTimers();
     this.stopAutoScroll();
-    this.setScrollLocked(true);
+    const firstSection = this.getVisibleSectionIds()[0];
+    const prologueVisible = this.showPrologue();
+    this.setScrollLocked(prologueVisible);
     this.envelopeOpening.set(false);
-    this.invitationOpened.set(false);
+    this.invitationOpened.set(!prologueVisible);
     this.shareFeedback.set('');
-    this.scrollToSection('prologue');
+    if (firstSection) {
+      this.scrollToSection(firstSection, 'auto');
+    }
   }
 
   protected async shareInvitation(): Promise<void> {
@@ -355,6 +381,32 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
 
   private labelForSection(sectionId: InvitationSectionId): string {
     return this.navigationItems.find((item) => item.id === sectionId)?.label ?? 'Celebration';
+  }
+
+  private getVisibleSectionIds(): InvitationSectionId[] {
+    const flags = this.featureFlags();
+    const sections: InvitationSectionId[] = [];
+
+    if (flags.showPrologue) sections.push('prologue');
+    if (flags.showFamilyInvitation) sections.push('intro');
+    if (flags.showCountdownTimer) sections.push('countdown');
+    sections.push(
+      ...weddingEvents
+        .filter((event) => flags[this.eventFeatureFlags[event.id]])
+        .map((event) => event.id),
+    );
+    if (flags.showOutro) sections.push('outro');
+
+    return sections;
+  }
+
+  private adjacentVisibleSection(
+    currentSectionId: InvitationSectionId,
+    direction: -1 | 1,
+  ): InvitationSectionId | undefined {
+    const sections = this.getVisibleSectionIds();
+    const currentIndex = sections.indexOf(currentSectionId);
+    return currentIndex < 0 ? undefined : sections[currentIndex + direction];
   }
 
   private syncCurrentSectionFromViewport(): void {
@@ -413,18 +465,27 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
       console.warn('Failed to load runtime environment; using default feature flags.', error);
     }
 
-    const showCountdownTimer = this.parseFeatureFlagValue(
-      runtimeEnvironment?.features?.showCountdownTimer,
-    );
-    if (showCountdownTimer !== undefined) {
-      this.showCountdownTimer.set(showCountdownTimer);
+    const nextFeatureFlags = { ...this.featureFlags() };
+    for (const key of Object.keys(nextFeatureFlags) as (keyof RuntimeFeatureFlags)[]) {
+      const value = this.parseFeatureFlagValue(runtimeEnvironment?.features?.[key]);
+      if (value !== undefined) {
+        nextFeatureFlags[key] = value;
+      }
     }
 
-    const enableAudio =
-      this.parseFeatureFlagValue(runtimeEnvironment?.features?.enableAudio) ?? true;
-    this.audio.setEnabled(enableAudio);
-    if (enableAudio) {
+    this.featureFlags.set(nextFeatureFlags);
+    this.audio.setEnabled(nextFeatureFlags.enableAudio);
+    if (nextFeatureFlags.enableAudio) {
       void this.audio.startPlayback();
+    }
+
+    if (!nextFeatureFlags.showPrologue) {
+      this.invitationOpened.set(true);
+      this.setScrollLocked(false);
+      const firstVisibleSection = this.getVisibleSectionIds()[0];
+      if (firstVisibleSection) {
+        window.requestAnimationFrame(() => this.jumpToOpenSection(firstVisibleSection));
+      }
     }
   }
 

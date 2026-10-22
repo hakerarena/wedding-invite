@@ -3,7 +3,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { type WeddingEventId } from '../data/wedding-events';
 
 export type InvitationSectionId =
-  'prologue' | 'intro' | 'wedding-highlight' | 'countdown' | WeddingEventId | 'outro';
+  'prologue' | 'intro' | 'countdown' | WeddingEventId | 'outro';
 
 @Injectable({ providedIn: 'root' })
 export class NavigationService {

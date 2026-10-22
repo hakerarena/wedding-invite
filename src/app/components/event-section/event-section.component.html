@@ -71,7 +71,7 @@
       }
 
       <div class="button-row button-row--secondary">
-        @if (event.previousEventId) {
+        @if (previousLabel) {
           <button
             type="button"
             class="button-ghost"
@@ -81,7 +81,7 @@
             Previous Event
           </button>
         }
-        @if (event.id !== 'wedding-day') {
+        @if (nextLabel) {
           <button
             type="button"
             class="button-ghost"

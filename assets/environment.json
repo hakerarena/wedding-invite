@@ -1,6 +1,13 @@
 {
   "features": {
+    "showPrologue": true,
+    "showFamilyInvitation": true,
     "showCountdownTimer": true,
+    "showNandimukh": true,
+    "showEngagementSangeet": true,
+    "showFlowerHaldi": true,
+    "showWeddingDay": true,
+    "showOutro": true,
     "enableAudio": true
   }
 }

@@ -1,9 +1,17 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
 .prologue-shell {
+  width: 100%;
   padding: 1rem 0 1.2rem;
 }
 
 .prologue-layout {
   display: grid;
+  width: min(1240px, calc(100% - 2rem));
+  margin-inline: auto;
   gap: 1.1rem;
 }
 
@@ -12,6 +20,10 @@
   min-height: min(88vh, 760px);
   display: grid;
   place-items: center;
+  align-content: center;
+  justify-items: center;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: clamp(1.25rem, 4vh, 2.2rem);
   text-align: center;
   background:
     radial-gradient(circle at top, rgba(255, 214, 147, 0.28), transparent 36%),
@@ -22,7 +34,7 @@
 .prologue-title {
   display: grid;
   gap: 0.35rem;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0;
 }
 
 .prologue-title span {
@@ -42,6 +54,59 @@
   text-shadow: 0 8px 22px rgba(48, 6, 12, 0.24);
 }
 
+.envelope-button__invitation {
+  position: absolute;
+  inset: auto 6% 7%;
+  z-index: 4;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.4rem;
+  color: #fff4df;
+  text-align: center;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  pointer-events: none;
+  text-shadow: 0 2px 8px rgba(48, 6, 12, 0.72);
+}
+
+.envelope-button__invitation span {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(0.85rem, 2.1vw, 1.1rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ffdc8b;
+}
+
+.envelope-button__invitation strong {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(2.5rem, 6vw, 3.6rem);
+  font-weight: 400;
+  line-height: 1;
+  color: #fff1c8;
+}
+
+.envelope-button__invitation time {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.2rem, 2.6vw, 1.4rem);
+  letter-spacing: 0.08em;
+  color: #fff8ed;
+}
+
+@media (max-width: 560px) {
+  .envelope-button__invitation {
+    inset-inline: 2%;
+    padding-inline: 0;
+  }
+
+  .envelope-button__invitation strong {
+    font-size: clamp(2.35rem, 11.5vw, 2.55rem);
+  }
+
+  .envelope-button__invitation time {
+    font-size: clamp(1.12rem, 5.5vw, 1.25rem);
+  }
+}
+
 .envelope {
   perspective: 1400px;
 }
@@ -59,7 +124,7 @@
 
 .envelope-button__cta {
   position: absolute;
-  inset: 50% auto auto 50%;
+  inset: 43% auto auto 50%;
   z-index: 3;
   min-width: 9rem;
   transform: translate(-50%, -50%);
@@ -83,8 +148,7 @@
 }
 
 .envelope-flap,
-.envelope-pocket,
-.invitation-card {
+.envelope-pocket {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -110,40 +174,8 @@
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 0, 50% 62%);
 }
 
-.invitation-card {
-  top: 20%;
-  width: calc(100% - 4rem);
-  min-height: 58%;
-  display: grid;
-  align-content: center;
-  gap: 0.4rem;
-  padding: 1.2rem;
-  border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(255, 249, 239, 0.98), rgba(255, 239, 211, 0.98)),
-    radial-gradient(circle at center, rgba(197, 154, 69, 0.14), transparent 60%);
-  color: var(--color-crimson);
-  box-shadow: inset 0 0 0 1px rgba(197, 154, 69, 0.35);
-  transition: transform var(--transition-slow);
-}
-
-.invitation-card strong {
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(2rem, 7vw, 3.4rem);
-}
-
-.invitation-card small {
-  font-size: 1rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .envelope--opened .envelope-flap {
   transform: translateX(-50%) rotateX(180deg);
-}
-
-.envelope--opened .invitation-card {
-  transform: translate(-50%, -18%);
 }
 
 .envelope--opened .envelope-button__cta {
@@ -154,21 +186,25 @@
     transform var(--transition-fast);
 }
 
+.envelope--opened .envelope-button__invitation {
+  opacity: 0;
+  transform: translateY(0.4rem);
+}
+
 .envelope--reduced .envelope-flap,
-.envelope--reduced .invitation-card,
 .envelope--reduced .envelope-button__cta {
   transition-duration: 0.01ms;
 }
 
 @media (min-width: 900px) {
   .prologue-layout {
-    justify-items: center;
+    justify-items: stretch;
   }
 
   .envelope-stage {
-    width: min(100%, 1240px);
+    width: 100%;
     min-height: 78vh;
-    padding: 2.5rem 3rem 3rem;
+    padding: 2.5rem clamp(2rem, 6vw, 5rem) 3rem;
     grid-template-columns: minmax(0, 1fr);
     grid-auto-rows: auto;
     justify-items: center;

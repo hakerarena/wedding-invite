@@ -44,17 +44,12 @@
     </section>
   }
 
-  @if (showCountdownTimer()) {
-    <app-countdown-timer
-      [countdown]="weddingCountdown()"
-      [pinned]="countdownPinned()"
-    ></app-countdown-timer>
-  }
-
   @for (event of visibleWeddingEvents(); track trackByEventId($index, event)) {
     <app-event-section
       [event]="event"
       [asset]="assetManifest[event.assetKey]"
+      [countdown]="showCountdownTimer() && event.id === 'nandimukh' && nandimukhDominant() ? weddingCountdown() : null"
+      [countdownPinned]="nandimukhDominant()"
       [previousLabel]="previousLabel(event)"
       [nextLabel]="nextLabel(event)"
       [active]="currentSectionId() === event.id"

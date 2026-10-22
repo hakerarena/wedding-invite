@@ -8,6 +8,13 @@
   [attr.data-section-id]="event.id"
   [attr.aria-labelledby]="event.id + '-title'"
 >
+  @if (countdown; as countdownValue) {
+    <app-countdown-timer
+      [countdown]="countdownValue"
+      [pinned]="countdownPinned"
+    />
+  }
+
   <article class="ornate-surface event-surface">
     <div class="event-visual">
       @if (asset; as sectionAsset) {

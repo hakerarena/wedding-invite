@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { EnvelopeIntroComponent } from './components/envelope-intro/envelope-intro.component';
-import { CountdownTimerComponent } from './components/countdown-timer/countdown-timer.component';
 import { EventSectionComponent } from './components/event-section/event-section.component';
 import { AudioToggleComponent } from './components/audio-toggle/audio-toggle.component';
 import { WeddingOutroComponent } from './components/wedding-outro/wedding-outro.component';
@@ -41,7 +40,6 @@ interface RuntimeEnvironment {
   imports: [
     CommonModule,
     EnvelopeIntroComponent,
-    CountdownTimerComponent,
     EventSectionComponent,
     AudioToggleComponent,
     WeddingOutroComponent,
@@ -100,23 +98,13 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   protected readonly visibleWeddingEvents = computed(() =>
     weddingEvents.filter((event) => this.featureFlags()[this.eventFeatureFlags[event.id]]),
   );
+  protected readonly nandimukhDominant = signal(false);
   protected readonly countdownNow = signal(Date.now());
   protected readonly envelopeOpening = signal(false);
   protected readonly invitationOpened = signal(false);
   protected readonly prefersReducedMotion = signal(false);
   protected readonly shareFeedback = signal('');
   protected readonly currentSectionId = this.navigation.currentSection;
-  protected readonly countdownPinned = computed(() => {
-    const sectionId = this.currentSectionId();
-    return (
-      sectionId === 'countdown' ||
-      sectionId === 'nandimukh' ||
-      sectionId === 'engagement-sangeet' ||
-      sectionId === 'flower-haldi' ||
-      sectionId === 'wedding-day' ||
-      sectionId === 'outro'
-    );
-  });
   protected readonly weddingCountdownTargetIso = '2026-12-02T12:00:00+05:30';
   protected readonly weddingCountdown = computed(() => {
     const targetTime = new Date(this.weddingCountdownTargetIso).getTime();
@@ -225,6 +213,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
       }
     };
     window.addEventListener('scroll', this.scrollHandler, { passive: true });
+    window.addEventListener('resize', this.scrollHandler, { passive: true });
     this.syncCurrentSectionFromViewport();
 
     this.autoScrollHandler = () => this.markAutoScrollPause();
@@ -248,6 +237,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     this.setScrollLocked(false);
     if (typeof window !== 'undefined' && this.scrollHandler) {
       window.removeEventListener('scroll', this.scrollHandler);
+      window.removeEventListener('resize', this.scrollHandler);
       this.scrollHandler = undefined;
     }
     if (typeof window !== 'undefined' && this.autoScrollHandler) {
@@ -389,7 +379,6 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
 
     if (flags.showPrologue) sections.push('prologue');
     if (flags.showFamilyInvitation) sections.push('intro');
-    if (flags.showCountdownTimer) sections.push('countdown');
     sections.push(
       ...weddingEvents
         .filter((event) => flags[this.eventFeatureFlags[event.id]])
@@ -413,6 +402,8 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     if (typeof window === 'undefined') {
       return;
     }
+
+    this.updateNandimukhDominance();
 
     const sections = Array.from(this.document.querySelectorAll<HTMLElement>('[data-section-id]'));
     if (!sections.length) {
@@ -438,6 +429,23 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     if (nearest.id !== 'prologue' && this.invitationOpened()) {
       this.invitationOpened.set(false);
     }
+  }
+
+  private updateNandimukhDominance(): void {
+    const viewportHeight = window.innerHeight;
+    const nandimukh = this.document.getElementById('nandimukh');
+
+    if (!this.showCountdownTimer() || !nandimukh || viewportHeight <= 0) {
+      this.nandimukhDominant.set(false);
+      return;
+    }
+
+    const bounds = nandimukh.getBoundingClientRect();
+    const visibleHeight = Math.max(
+      0,
+      Math.min(bounds.bottom, viewportHeight) - Math.max(bounds.top, 0),
+    );
+    this.nandimukhDominant.set(visibleHeight / viewportHeight > 0.5);
   }
 
   private clearIntroTimers(): void {

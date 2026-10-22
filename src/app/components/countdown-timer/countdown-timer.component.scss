@@ -8,8 +8,7 @@
 }
 
 .countdown-strip {
-  position: sticky;
-  top: 0.55rem;
+  position: static;
   z-index: 18;
   display: grid;
   gap: 0.7rem;
